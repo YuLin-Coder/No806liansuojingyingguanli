@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dao.GoodsOrderDao">
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        a.id as id
+        ,a.goods_order_name as goodsOrderName
+        ,a.caozuo_name as caozuoName
+        ,a.caozuo_table as caozuoTable
+        ,a.goods_order_types as goodsOrderTypes
+        ,a.gongyingshang_id as gongyingshangId
+        ,a.fendian_id as fendianId
+        ,a.insert_time as insertTime
+        ,a.create_time as createTime
+    </sql>
+    <select id="selectListView" parameterType="map" resultType="com.entity.view.GoodsOrderView" >
+        SELECT
+        <include refid="Base_Column_List" />
+
+--         级联表的字段
+        ,fendian.fendian_name as fendianName
+        ,fendian.fendian_types as fendianTypes
+        ,fendian.fendian_address as fendianAddress
+        ,fendian.fendian_content as fendianContent
+        ,gongyingshang.gongyingshang_name as gongyingshangName
+        ,gongyingshang.gongyingshang_content as gongyingshangContent
+        ,gongyingshang.gongyingshang_types as gongyingshangTypes
+        ,gongyingshang.gongyingshang_xinyong_types as gongyingshangXinyongTypes
+
+        FROM goods_order  a
+        left JOIN fendian fendian ON a.fendian_id = fendian.id
+        left JOIN gongyingshang gongyingshang ON a.gongyingshang_id = gongyingshang.id
+
+        <where>
+            <if test=" params.goodsOrderName != '' and params.goodsOrderName != null and params.goodsOrderName != 'null' ">
+                and a.goods_order_name like CONCAT('%',#{params.goodsOrderName},'%')
+            </if>
+            <if test=" params.caozuoName != '' and params.caozuoName != null and params.caozuoName != 'null' ">
+                and a.caozuo_name like CONCAT('%',#{params.caozuoName},'%')
+            </if>
+            <if test=" params.caozuoTable != '' and params.caozuoTable != null and params.caozuoTable != 'null' ">
+                and a.caozuo_table like CONCAT('%',#{params.caozuoTable},'%')
+            </if>
+            <if test="params.goodsOrderTypes != null">
+                and a.goods_order_types = #{params.goodsOrderTypes}
+            </if>
+            <if test="params.gongyingshangId != null">
+                and a.gongyingshang_id = #{params.gongyingshangId}
+            </if>
+            <if test="params.fendianId != null">
+                and a.fendian_id = #{params.fendianId}
+            </if>
+            <if test=" params.insertTimeStart != '' and params.insertTimeStart != null ">
+                <![CDATA[  and DATE_FORMAT(a.insert_time, '%Y-%m-%d %H:%T:%s') >=
+                DATE_FORMAT(#{params.insertTimeStart}, '%Y-%m-%d %H:%T:%s')   ]]>
+            </if>
+            <if test=" params.insertTimeEnd != '' and params.insertTimeEnd != null ">
+                <![CDATA[  and DATE_FORMAT(a.insert_time, '%Y-%m-%d %H:%T:%s') <=
+                DATE_FORMAT(#{params.insertTimeEnd} , '%Y-%m-%d %H:%T:%s')    ]]>
+            </if>
+
+            <if test=" params.fendianName != '' and params.fendianName != null and params.fendianName != 'null' ">
+                and fendian.fendian_name like CONCAT('%',#{params.fendianName},'%')
+            </if>
+            <if test="params.fendianTypes != null">
+                and fendian.fendian_types = #{params.fendianTypes}
+            </if>
+
+            <if test=" params.fendianAddress != '' and params.fendianAddress != null and params.fendianAddress != 'null' ">
+                and fendian.fendian_address like CONCAT('%',#{params.fendianAddress},'%')
+            </if>
+            <if test=" params.fendianContent != '' and params.fendianContent != null and params.fendianContent != 'null' ">
+                and fendian.fendian_content like CONCAT('%',#{params.fendianContent},'%')
+            </if>
+            <if test=" params.gongyingshangName != '' and params.gongyingshangName != null and params.gongyingshangName != 'null' ">
+                and gongyingshang.gongyingshang_name like CONCAT('%',#{params.gongyingshangName},'%')
+            </if>
+            <if test=" params.gongyingshangContent != '' and params.gongyingshangContent != null and params.gongyingshangContent != 'null' ">
+                and gongyingshang.gongyingshang_content like CONCAT('%',#{params.gongyingshangContent},'%')
+            </if>
+            <if test="params.gongyingshangTypes != null">
+                and gongyingshang.gongyingshang_types = #{params.gongyingshangTypes}
+            </if>
+
+            <if test="params.gongyingshangXinyongTypes != null">
+                and gongyingshang.gongyingshang_xinyong_types = #{params.gongyingshangXinyongTypes}
+            </if>
+
+        </where>
+        order by a.${params.orderBy} desc
+    </select>
+
+</mapper>

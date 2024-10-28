@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dao.GoodsOrderListDao">
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        a.id as id
+        ,a.goods_order_id as goodsOrderId
+        ,a.goods_id as goodsId
+        ,a.goods_order_list_number as goodsOrderListNumber
+        ,a.create_time as createTime
+    </sql>
+    <select id="selectListView" parameterType="map" resultType="com.entity.view.GoodsOrderListView" >
+        SELECT
+        <include refid="Base_Column_List" />
+
+--         级联表的字段
+        ,goods.goods_name as goodsName
+        ,goods.goods_types as goodsTypes
+        ,goods.goods_number as goodsNumber
+        ,goods.goods_photo as goodsPhoto
+        ,goods.danwei as danwei
+        ,goods.danjia as danjia
+        ,goods.goods_content as goodsContent
+        ,goods.flag as flag
+        ,goodsOrder.goods_order_name as goodsOrderName
+        ,goodsOrder.caozuo_name as caozuoName
+        ,goodsOrder.caozuo_table as caozuoTable
+        ,goodsOrder.goods_order_types as goodsOrderTypes
+        ,goodsOrder.gongyingshang_id as gongyingshangId
+        ,goodsOrder.fendian_id as fendianId
+        ,goodsOrder.insert_time as insertTime
+
+        FROM goods_order_list  a
+        left JOIN goods goods ON a.goods_id = goods.id
+        left JOIN goods_order goodsOrder ON a.goods_order_id = goodsOrder.id
+
+        <where>
+            <if test="params.goodsOrderId != null">
+                and a.goods_order_id = #{params.goodsOrderId}
+            </if>
+            <if test="params.goodsId != null">
+                and a.goods_id = #{params.goodsId}
+            </if>
+            <if test="params.goodsOrderListNumberStart != null">
+                <![CDATA[  and a.goods_order_list_number >= #{params.goodsOrderListNumberStart}   ]]>
+            </if>
+            <if test="params.goodsOrderListNumberEnd != null">
+                <![CDATA[  and a.goods_order_list_number <= #{params.goodsOrderListNumberEnd}   ]]>
+            </if>
+
+            <if test=" params.goodsName != '' and params.goodsName != null and params.goodsName != 'null' ">
+                and goods.goods_name like CONCAT('%',#{params.goodsName},'%')
+            </if>
+            <if test="params.goodsTypes != null">
+                and goods.goods_types = #{params.goodsTypes}
+            </if>
+
+            <if test="params.goodsNumberStart != null ">
+                <![CDATA[  and goods.goods_number >= #{params.goodsNumberStart}   ]]>
+            </if>
+            <if test="params.goodsNumberEnd != null ">
+                <![CDATA[  and goods.goods_number <= #{params.goodsNumberEnd}   ]]>
+            </if>
+            <if test=" params.danwei != '' and params.danwei != null and params.danwei != 'null' ">
+                and goods.danwei like CONCAT('%',#{params.danwei},'%')
+            </if>
+            <if test="params.danjiaStart != null ">
+                <![CDATA[  and goods.danjia >= #{params.danjiaStart}   ]]>
+            </if>
+            <if test="params.danjiaEnd != null ">
+                <![CDATA[  and goods.danjia <= #{params.danjiaEnd}   ]]>
+            </if>
+            <if test=" params.goodsContent != '' and params.goodsContent != null and params.goodsContent != 'null' ">
+                and goods.goods_content like CONCAT('%',#{params.goodsContent},'%')
+            </if>
+            <if test="params.flagStart != null ">
+                <![CDATA[  and goods.flag >= #{params.flagStart}   ]]>
+            </if>
+            <if test="params.flagEnd != null ">
+                <![CDATA[  and goods.flag <= #{params.flagEnd}   ]]>
+            </if>
+            <if test=" params.goodsOrderName != '' and params.goodsOrderName != null and params.goodsOrderName != 'null' ">
+                and goodsOrder.goods_order_name like CONCAT('%',#{params.goodsOrderName},'%')
+            </if>
+            <if test=" params.caozuoName != '' and params.caozuoName != null and params.caozuoName != 'null' ">
+                and goodsOrder.caozuo_name like CONCAT('%',#{params.caozuoName},'%')
+            </if>
+            <if test=" params.caozuoTable != '' and params.caozuoTable != null and params.caozuoTable != 'null' ">
+                and goodsOrder.caozuo_table like CONCAT('%',#{params.caozuoTable},'%')
+            </if>
+            <if test="params.goodsOrderTypes != null">
+                and goodsOrder.goods_order_types = #{params.goodsOrderTypes}
+            </if>
+
+            <if test="params.gongyingshangId != null">
+                and goodsOrder.gongyingshang_id = #{params.gongyingshangId}
+            </if>
+            <if test="params.fendianId != null">
+                and goodsOrder.fendian_id = #{params.fendianId}
+            </if>
+            <if test=" params.insertTimeStart != '' and params.insertTimeStart != null ">
+                <![CDATA[  and DATE_FORMAT(goodsOrder.insert_time, '%Y-%m-%d %H:%T:%s') >=
+                DATE_FORMAT(#{params.insertTimeStart}, '%Y-%m-%d %H:%T:%s')   ]]>
+            </if>
+            <if test=" params.insertTimeEnd != '' and params.insertTimeEnd != null ">
+                <![CDATA[  and DATE_FORMAT(goodsOrder.insert_time, '%Y-%m-%d %H:%T:%s') <=
+                DATE_FORMAT(#{params.insertTimeEnd} , '%Y-%m-%d %H:%T:%s')    ]]>
+            </if>
+        </where>
+        order by a.${params.orderBy} desc
+    </select>
+
+</mapper>

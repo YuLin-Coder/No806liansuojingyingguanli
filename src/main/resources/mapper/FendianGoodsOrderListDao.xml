@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dao.FendianGoodsOrderListDao">
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        a.id as id
+        ,a.fendian_goods_order_id as fendianGoodsOrderId
+        ,a.fendian_goods_id as fendianGoodsId
+        ,a.fendian_goods_order_list_number as fendianGoodsOrderListNumber
+        ,a.create_time as createTime
+    </sql>
+    <select id="selectListView" parameterType="map" resultType="com.entity.view.FendianGoodsOrderListView" >
+        SELECT
+        <include refid="Base_Column_List" />
+
+--         级联表的字段
+        ,fendianGoods.fendian_id as fendianId
+        ,fendianGoods.goods_only as goodsOnly
+        ,fendianGoods.goods_name as goodsName
+        ,fendianGoods.goods_types as goodsTypes
+        ,fendianGoods.fendian_goods_number as fendianGoodsNumber
+        ,fendianGoods.goods_photo as goodsPhoto
+        ,fendianGoods.danwei as danwei
+        ,fendianGoods.danjia as danjia
+        ,fendianGoods.goods_content as goodsContent
+        ,fendianGoodsOrder.caozuo_name as caozuoName
+        ,fendianGoodsOrder.caozuo_table as caozuoTable
+        ,fendianGoodsOrder.huiyuan_id as huiyuanId
+        ,fendianGoodsOrder.original_money as originalMoney
+        ,fendianGoodsOrder.discount_money as discountMoney
+        ,fendianGoodsOrder.insert_time as insertTime
+
+        FROM fendian_goods_order_list  a
+        left JOIN fendian_goods fendianGoods ON a.fendian_goods_id = fendianGoods.id
+        left JOIN fendian_goods_order fendianGoodsOrder ON a.fendian_goods_order_id = fendianGoodsOrder.id
+
+        <where>
+            <if test="params.fendianGoodsOrderId != null">
+                and a.fendian_goods_order_id = #{params.fendianGoodsOrderId}
+            </if>
+            <if test="params.fendianGoodsId != null">
+                and a.fendian_goods_id = #{params.fendianGoodsId}
+            </if>
+            <if test="params.fendianGoodsOrderListNumberStart != null">
+                <![CDATA[  and a.fendian_goods_order_list_number >= #{params.fendianGoodsOrderListNumberStart}   ]]>
+            </if>
+            <if test="params.fendianGoodsOrderListNumberEnd != null">
+                <![CDATA[  and a.fendian_goods_order_list_number <= #{params.fendianGoodsOrderListNumberEnd}   ]]>
+            </if>
+
+            <if test="params.fendianId != null">
+                and fendianGoods.fendian_id = #{params.fendianId}
+            </if>
+            <if test="params.goodsOnlyStart != null ">
+                <![CDATA[  and fendianGoods.goods_only >= #{params.goodsOnlyStart}   ]]>
+            </if>
+            <if test="params.goodsOnlyEnd != null ">
+                <![CDATA[  and fendianGoods.goods_only <= #{params.goodsOnlyEnd}   ]]>
+            </if>
+            <if test=" params.goodsName != '' and params.goodsName != null and params.goodsName != 'null' ">
+                and fendianGoods.goods_name like CONCAT('%',#{params.goodsName},'%')
+            </if>
+            <if test="params.goodsTypes != null">
+                and fendianGoods.goods_types = #{params.goodsTypes}
+            </if>
+
+            <if test="params.fendianGoodsNumberStart != null ">
+                <![CDATA[  and fendianGoods.fendian_goods_number >= #{params.fendianGoodsNumberStart}   ]]>
+            </if>
+            <if test="params.fendianGoodsNumberEnd != null ">
+                <![CDATA[  and fendianGoods.fendian_goods_number <= #{params.fendianGoodsNumberEnd}   ]]>
+            </if>
+            <if test=" params.danwei != '' and params.danwei != null and params.danwei != 'null' ">
+                and fendianGoods.danwei like CONCAT('%',#{params.danwei},'%')
+            </if>
+            <if test="params.danjiaStart != null ">
+                <![CDATA[  and fendianGoods.danjia >= #{params.danjiaStart}   ]]>
+            </if>
+            <if test="params.danjiaEnd != null ">
+                <![CDATA[  and fendianGoods.danjia <= #{params.danjiaEnd}   ]]>
+            </if>
+            <if test=" params.goodsContent != '' and params.goodsContent != null and params.goodsContent != 'null' ">
+                and fendianGoods.goods_content like CONCAT('%',#{params.goodsContent},'%')
+            </if>
+            <if test=" params.caozuoName != '' and params.caozuoName != null and params.caozuoName != 'null' ">
+                and fendianGoodsOrder.caozuo_name like CONCAT('%',#{params.caozuoName},'%')
+            </if>
+            <if test=" params.caozuoTable != '' and params.caozuoTable != null and params.caozuoTable != 'null' ">
+                and fendianGoodsOrder.caozuo_table like CONCAT('%',#{params.caozuoTable},'%')
+            </if>
+            <if test="params.huiyuanId != null">
+                and fendianGoodsOrder.huiyuan_id = #{params.huiyuanId}
+            </if>
+            <if test="params.originalMoneyStart != null ">
+                <![CDATA[  and fendianGoodsOrder.original_money >= #{params.originalMoneyStart}   ]]>
+            </if>
+            <if test="params.originalMoneyEnd != null ">
+                <![CDATA[  and fendianGoodsOrder.original_money <= #{params.originalMoneyEnd}   ]]>
+            </if>
+            <if test="params.discountMoneyStart != null ">
+                <![CDATA[  and fendianGoodsOrder.discount_money >= #{params.discountMoneyStart}   ]]>
+            </if>
+            <if test="params.discountMoneyEnd != null ">
+                <![CDATA[  and fendianGoodsOrder.discount_money <= #{params.discountMoneyEnd}   ]]>
+            </if>
+            <if test=" params.insertTimeStart != '' and params.insertTimeStart != null ">
+                <![CDATA[  and DATE_FORMAT(fendianGoodsOrder.insert_time, '%Y-%m-%d %H:%T:%s') >=
+                DATE_FORMAT(#{params.insertTimeStart}, '%Y-%m-%d %H:%T:%s')   ]]>
+            </if>
+            <if test=" params.insertTimeEnd != '' and params.insertTimeEnd != null ">
+                <![CDATA[  and DATE_FORMAT(fendianGoodsOrder.insert_time, '%Y-%m-%d %H:%T:%s') <=
+                DATE_FORMAT(#{params.insertTimeEnd} , '%Y-%m-%d %H:%T:%s')    ]]>
+            </if>
+        </where>
+        order by a.${params.orderBy} desc
+    </select>
+
+</mapper>

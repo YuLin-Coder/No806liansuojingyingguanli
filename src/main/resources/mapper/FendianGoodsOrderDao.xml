@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dao.FendianGoodsOrderDao">
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        a.id as id
+        ,a.caozuo_name as caozuoName
+        ,a.caozuo_table as caozuoTable
+        ,a.huiyuan_id as huiyuanId
+        ,a.original_money as originalMoney
+        ,a.discount_money as discountMoney
+        ,a.insert_time as insertTime
+        ,a.create_time as createTime
+    </sql>
+    <select id="selectListView" parameterType="map" resultType="com.entity.view.FendianGoodsOrderView" >
+        SELECT
+        <include refid="Base_Column_List" />
+
+--         级联表的字段
+        ,huiyuan.huiyuan_name as huiyuanName
+        ,huiyuan.sex_types as sexTypes
+        ,huiyuan.huiyuan_id_number as huiyuanIdNumber
+        ,huiyuan.huiyuan_phone as huiyuanPhone
+        ,huiyuan.jifen as jifen
+        ,huiyuan.jifen_types as jifenTypes
+
+        FROM fendian_goods_order  a
+        left JOIN huiyuan huiyuan ON a.huiyuan_id = huiyuan.id
+
+        <where>
+            <if test=" params.caozuoName != '' and params.caozuoName != null and params.caozuoName != 'null' ">
+                and a.caozuo_name like CONCAT('%',#{params.caozuoName},'%')
+            </if>
+            <if test=" params.caozuoTable != '' and params.caozuoTable != null and params.caozuoTable != 'null' ">
+                and a.caozuo_table like CONCAT('%',#{params.caozuoTable},'%')
+            </if>
+            <if test="params.huiyuanId != null">
+                and a.huiyuan_id = #{params.huiyuanId}
+            </if>
+            <if test="params.originalMoneyStart != null ">
+                <![CDATA[  and a.original_money >= #{params.originalMoneyStart}   ]]>
+            </if>
+            <if test="params.originalMoneyEnd != null ">
+                <![CDATA[  and a.original_money <= #{params.originalMoneyEnd}   ]]>
+            </if>
+            <if test="params.discountMoneyStart != null ">
+                <![CDATA[  and a.discount_money >= #{params.discountMoneyStart}   ]]>
+            </if>
+            <if test="params.discountMoneyEnd != null ">
+                <![CDATA[  and a.discount_money <= #{params.discountMoneyEnd}   ]]>
+            </if>
+            <if test=" params.insertTimeStart != '' and params.insertTimeStart != null ">
+                <![CDATA[  and DATE_FORMAT(a.insert_time, '%Y-%m-%d %H:%T:%s') >=
+                DATE_FORMAT(#{params.insertTimeStart}, '%Y-%m-%d %H:%T:%s')   ]]>
+            </if>
+            <if test=" params.insertTimeEnd != '' and params.insertTimeEnd != null ">
+                <![CDATA[  and DATE_FORMAT(a.insert_time, '%Y-%m-%d %H:%T:%s') <=
+                DATE_FORMAT(#{params.insertTimeEnd} , '%Y-%m-%d %H:%T:%s')    ]]>
+            </if>
+
+            <if test=" params.huiyuanName != '' and params.huiyuanName != null and params.huiyuanName != 'null' ">
+                and huiyuan.huiyuan_name like CONCAT('%',#{params.huiyuanName},'%')
+            </if>
+            <if test="params.sexTypes != null">
+                and huiyuan.sex_types = #{params.sexTypes}
+            </if>
+
+            <if test=" params.huiyuanIdNumber != '' and params.huiyuanIdNumber != null and params.huiyuanIdNumber != 'null' ">
+                and huiyuan.huiyuan_id_number like CONCAT('%',#{params.huiyuanIdNumber},'%')
+            </if>
+            <if test=" params.huiyuanPhone != '' and params.huiyuanPhone != null and params.huiyuanPhone != 'null' ">
+                and huiyuan.huiyuan_phone like CONCAT('%',#{params.huiyuanPhone},'%')
+            </if>
+            <if test="params.jifenStart != null ">
+                <![CDATA[  and huiyuan.jifen >= #{params.jifenStart}   ]]>
+            </if>
+            <if test="params.jifenEnd != null ">
+                <![CDATA[  and huiyuan.jifen <= #{params.jifenEnd}   ]]>
+            </if>
+            <if test="params.jifenTypes != null">
+                and huiyuan.jifen_types = #{params.jifenTypes}
+            </if>
+
+        </where>
+        order by a.${params.orderBy} desc
+    </select>
+
+</mapper>
